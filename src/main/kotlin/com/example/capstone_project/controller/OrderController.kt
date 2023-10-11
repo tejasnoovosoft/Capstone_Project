@@ -26,11 +26,11 @@ class OrderController(private val orderService: OrderService, private val userSe
     }
 
     @DeleteMapping("/{id}/{orderId}")
-    fun deleteOrder(@PathVariable id: Long, @PathVariable order_id: Long): ResponseEntity<String> {
+    fun deleteOrder(@PathVariable id: Long, @PathVariable orderId: Long): ResponseEntity<String> {
         if (!userService.isUserExists(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
         }
-        orderService.deleteOrder(id, order_id)
+        orderService.deleteOrder(id, orderId)
         return ResponseEntity.status(HttpStatus.OK).body("Order Deleted Successfully")
     }
 }
