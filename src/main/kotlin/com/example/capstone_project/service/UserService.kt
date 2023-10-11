@@ -28,8 +28,7 @@ class UserService {
         users.removeIf { it.id == user.id }
         users.add(user)
     }
-
     fun deleteUser(id: Long): Boolean {
-        return users.removeIf { it.id == id }
+        return users.removeIf{ it.id == id }
     }
 }

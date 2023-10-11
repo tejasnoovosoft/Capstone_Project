@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 class OrderController(private val orderService: OrderService, private val userService: UserService) {
-    @PostMapping("/{id}/order")
+    @PostMapping("/{id}/orders")
     fun orderByUser(@PathVariable id: Long, @RequestBody order: Order): ResponseEntity<String> {
         if (!userService.isUserExists(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
@@ -19,13 +19,13 @@ class OrderController(private val orderService: OrderService, private val userSe
         return ResponseEntity.status(HttpStatus.OK).body("User Placed Successfully")
     }
 
-    @GetMapping("/{id}/ordered_products")
+    @GetMapping("/{id}/orders")
     fun getOrdersByUserId(@PathVariable id: Long): ResponseEntity<List<Order>> {
         val orders = orderService.getOrdersByUserId(id)
         return ResponseEntity.of(orders)
     }
 
-    @DeleteMapping("/{id}/delete_order/{order_id}")
+    @DeleteMapping("/{id}/{orderId}")
     fun deleteOrder(@PathVariable id: Long, @PathVariable order_id: Long): ResponseEntity<String> {
         if (!userService.isUserExists(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")

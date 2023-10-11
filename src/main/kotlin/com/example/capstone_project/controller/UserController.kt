@@ -8,20 +8,19 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 class UserController(private val userService: UserService, private val emailService: EmailService) {
-    @PostMapping("/user/create")
+    @PostMapping("/users")
     fun createNewUser(@RequestBody user: User): ResponseEntity<String> {
-        if (user.id == null || user.email == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid User")
+        return when {
+            user.id == null || user.email == null -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid User")
+            userService.isUserExists(user.id) -> ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Exists")
+            else -> {
+                userService.addUser(user)
+                emailService.sendRegistrationEmail(user.email)
+                ResponseEntity.status(HttpStatus.CREATED).body("User Successfully Created")
+            }
         }
-        if (userService.isUserExists(user.id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Exists")
-        }
-        userService.addUser(user)
-
-        emailService.sendRegistrationEmail(user.email)
-        return ResponseEntity.status(HttpStatus.CREATED).body("User Successfully Created")
     }
 
     @GetMapping("/users")
@@ -30,13 +29,13 @@ class UserController(private val userService: UserService, private val emailServ
         return ResponseEntity.of(users)
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     fun getUserById(@PathVariable id: Long): ResponseEntity<User> {
         val user = userService.getUserById(id)
         return ResponseEntity.of(user)
     }
 
-    @PutMapping("/user/update/{id}")
+    @PutMapping("/users/{id}")
     fun updateUser(@PathVariable id: Long, @RequestBody user: User): ResponseEntity<String> {
         if (!userService.isUserExists(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
@@ -45,7 +44,7 @@ class UserController(private val userService: UserService, private val emailServ
         return ResponseEntity.status(HttpStatus.OK).body("User Updated Successfully")
     }
 
-    @DeleteMapping("/user/delete/{id}")
+    @DeleteMapping("/users/{id}")
     fun deleteUser(@PathVariable id: Long): ResponseEntity<String> {
         val isRemovedUser = userService.deleteUser(id)
         if (isRemovedUser) {
