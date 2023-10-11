@@ -1,6 +1,5 @@
 package com.example.capstone_project.service
 
-import com.example.capstone_project.model.Order
 import com.example.capstone_project.model.User
 import org.springframework.stereotype.Service
 import java.util.*
@@ -26,13 +25,11 @@ class UserService {
     }
 
     fun updateUser(user: User) {
-        val oldUserData = users.find { user.id == it.id }
-        users.remove(oldUserData)
+        users.removeIf { it.id == user.id }
         users.add(user)
     }
 
-    fun deleteUser(id: Long) {
-        val user = users.find { it.id == id }
-        users.remove(user)
+    fun deleteUser(id: Long): Boolean {
+        return users.removeIf { it.id == id }
     }
 }

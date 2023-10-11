@@ -1,27 +1,26 @@
 package com.example.capstone_project.controller
 
 import com.example.capstone_project.model.User
+import com.example.capstone_project.service.EmailService
 import com.example.capstone_project.service.UserService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api")
-class UserController {
-    @Autowired
-    private lateinit var userService: UserService
-
+class UserController(private val userService: UserService, private val emailService: EmailService) {
     @PostMapping("/user/create")
     fun createNewUser(@RequestBody user: User): ResponseEntity<String> {
-        if (user.id == null) {
+        if (user.id == null || user.email == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid User")
         }
         if (userService.isUserExists(user.id)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Exists")
         }
         userService.addUser(user)
+
+        emailService.sendRegistrationEmail(user.email)
         return ResponseEntity.status(HttpStatus.CREATED).body("User Successfully Created")
     }
 
@@ -48,10 +47,10 @@ class UserController {
 
     @DeleteMapping("/user/delete/{id}")
     fun deleteUser(@PathVariable id: Long): ResponseEntity<String> {
-        if (!userService.isUserExists(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
+        val isRemovedUser = userService.deleteUser(id)
+        if (isRemovedUser) {
+            return ResponseEntity.status(HttpStatus.OK).body("User Deleted Successfully")
         }
-        userService.deleteUser(id)
-        return ResponseEntity.status(HttpStatus.OK).body("User Deleted Successfully")
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
     }
 }
