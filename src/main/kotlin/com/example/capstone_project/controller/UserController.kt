@@ -1,5 +1,6 @@
 package com.example.capstone_project.controller
 
+import com.example.capstone_project.model.ProductOrder
 import com.example.capstone_project.model.User
 import com.example.capstone_project.service.EmailService
 import com.example.capstone_project.service.UserService
@@ -55,4 +56,11 @@ class UserController(private val userService: UserService, private val emailServ
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found")
     }
+
+    @GetMapping("/users/{userId}/delivered-orders")
+    fun getDeliveredOrders(@PathVariable userId: Long): List<ProductOrder>? {
+        val orders = userService.getDeliveredOrders(userId)
+        return orders
+    }
+
 }

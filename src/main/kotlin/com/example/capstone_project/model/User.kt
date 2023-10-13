@@ -5,6 +5,6 @@ data class User(
     val username: String?,
     val email: String?,
     val address: Address,
-    val orders: MutableList<Order>?,
+    val orders : MutableList<Order>?,
     val wishList: List<Product>?
 )

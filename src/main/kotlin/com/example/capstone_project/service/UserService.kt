@@ -1,5 +1,6 @@
 package com.example.capstone_project.service
 
+import com.example.capstone_project.model.ProductOrder
 import com.example.capstone_project.model.User
 import org.springframework.stereotype.Service
 import java.util.*
@@ -30,5 +31,13 @@ class UserService {
     }
     fun deleteUser(id: Long): Boolean {
         return users.removeIf { it.userId == id }
+    }
+
+    fun getDeliveredOrders(userId: Long): List<ProductOrder>? {
+        val user = getUserById(userId)
+        return user?.orders
+            ?.flatMap { order ->
+                order.products?.filter { it.isDelivered == true } ?: emptyList()
+            } ?: emptyList()
     }
 }
