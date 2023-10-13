@@ -58,9 +58,9 @@ class UserController(private val userService: UserService, private val emailServ
     }
 
     @GetMapping("/users/{userId}/delivered-orders")
-    fun getDeliveredOrders(@PathVariable userId: Long): List<ProductOrder>? {
+    fun getDeliveredOrders(@PathVariable userId: Long): ResponseEntity<List<ProductOrder>>? {
         val orders = userService.getDeliveredOrders(userId)
-        return orders
+        return ResponseEntity.ok(orders)
     }
 
 }
