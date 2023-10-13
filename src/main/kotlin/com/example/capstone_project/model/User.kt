@@ -1,7 +1,7 @@
 package com.example.capstone_project.model
 
 data class User(
-    val id: Long?,
+    val userId: Long?,
     val username: String?,
     val email: String?,
     val address: Address,

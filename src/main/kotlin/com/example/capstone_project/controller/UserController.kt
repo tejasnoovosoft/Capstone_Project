@@ -13,8 +13,11 @@ class UserController(private val userService: UserService, private val emailServ
     @PostMapping("/users")
     fun createNewUser(@RequestBody user: User): ResponseEntity<String> {
         return when {
-            user.id == null || user.email == null -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid User")
-            userService.isUserExists(user.id) -> ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Exists")
+            user.userId == null || user.email == null -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Invalid User")
+
+            userService.isUserExists(user.userId) -> ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("User Already Exists")
             else -> {
                 userService.addUser(user)
                 emailService.sendRegistrationEmail(user.email)
@@ -31,8 +34,8 @@ class UserController(private val userService: UserService, private val emailServ
 
     @GetMapping("/users/{id}")
     fun getUserById(@PathVariable id: Long): ResponseEntity<User> {
-        val user = userService.getUserById(id)
-        return ResponseEntity.of(user)
+        val user = userService.getUserById(id) ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(user)
     }
 
     @PutMapping("/users/{id}")

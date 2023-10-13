@@ -1,5 +1,11 @@
 package com.example.capstone_project.model
 
-import java.util.*
+import org.springframework.format.annotation.DateTimeFormat
+import java.time.LocalDate
 
-data class Order(val orderId:Long?,val products: MutableList<Product>?, val orderDate: String?, val isDelivered: Boolean)
+data class Order(
+    val orderId: Long?,
+    val products: MutableList<ProductOrder>?,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    val orderDate: LocalDate,
+)
